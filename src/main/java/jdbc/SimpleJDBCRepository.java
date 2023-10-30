@@ -28,14 +28,14 @@ public class SimpleJDBCRepository {
     private static final String findAllUsersSQL = "SELECT * FROM myusers";
 
 
-    public Long createUser(String firstName, String lastName, int age) throws SQLException {
+    public Long createUser() throws SQLException {
         //
         try {
             connection = CustomDataSource.getInstance().getConnection();
             ps = connection.prepareStatement(createUserSQL, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, firstName);
-            ps.setString(2, lastName);
-            ps.setInt(3, age);
+            ps.setString(1, "firstName");
+            ps.setString(2, "lastName");
+            ps.setInt(3, 1);
             int affectedRows = ps.executeUpdate();
 
             if (affectedRows == 0) {
