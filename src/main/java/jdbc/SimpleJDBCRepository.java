@@ -33,9 +33,6 @@ public class SimpleJDBCRepository {
         try {
             connection = CustomDataSource.getInstance().getConnection();
             ps = connection.prepareStatement(createUserSQL, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, User.builder().build().getFirstName());
-            ps.setString(2, User.builder().build().getLastName());
-            ps.setInt(3, User.builder().build().getAge());
             int affectedRows = ps.executeUpdate();
 
             if (affectedRows == 0) {
