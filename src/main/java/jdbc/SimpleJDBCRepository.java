@@ -20,6 +20,10 @@ public class SimpleJDBCRepository {
     private PreparedStatement ps = null;
     private Statement st = null;
 
+
+    String createSchemaSQL = "CREATE SCHEMA myusers";
+    String createTableSQL = "CREATE TABLE if not exists users ( id serial PRIMARY KEY, firstname VARCHAR(50) NOT NULL, lastname VARCHAR(50) NOT NULL, age INT )";
+
     private static final String createUserSQL = "INSERT INTO myusers (firstName, lastName, age) VALUES (?, ?, ?)";
     private static final String updateUserSQL = "UPDATE myusers SET firstName=?, lastName=?, age=? WHERE id=?";
     private static final String deleteUserSQL = "DELETE FROM myusers WHERE id=?";
@@ -32,6 +36,10 @@ public class SimpleJDBCRepository {
         //
         try {
             connection = CustomDataSource.getInstance().getConnection();
+
+            connection.createStatement();
+            st.execute(createSchemaSQL);
+            st.execute(createTableSQL);
             ps = connection.prepareStatement(createUserSQL, Statement.RETURN_GENERATED_KEYS);
             int affectedRows = ps.executeUpdate();
 
