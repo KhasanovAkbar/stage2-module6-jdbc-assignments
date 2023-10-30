@@ -125,19 +125,19 @@ public class SimpleJDBCRepository {
         return userList;
     }
 
-    public User updateUser(Long userId, String newFirstName, String newLastName, int newAge) throws SQLException {
+    public User updateUser(User newUser) throws SQLException {
         //
         try {
             connection = CustomDataSource.getInstance().getConnection();
             ps = connection.prepareStatement(updateUserSQL);
-            ps.setString(1, newFirstName);
-            ps.setString(2, newLastName);
-            ps.setInt(3, newAge);
-            ps.setLong(4, userId);
+            ps.setString(1, newUser.getFirstName());
+            ps.setString(2, newUser.getLastName());
+            ps.setInt(3, newUser.getAge());
+            ps.setLong(4, newUser.getId());
             int updatedRows = ps.executeUpdate();
 
             if (updatedRows > 0) {
-                return new User(userId, newFirstName, newFirstName, newAge);
+                return new User(newUser.getId(), newUser.getFirstName(), newUser.getLastName(), newUser.getAge());
             }
         } finally {
             closeResources();
