@@ -146,7 +146,7 @@ public class SimpleJDBCRepository {
         return null;
     }
 
-    private void deleteUser(Long userId) throws SQLException {
+    public void deleteUser(Long userId) throws SQLException {
         //
         try {
             connection = CustomDataSource.getInstance().getConnection();
