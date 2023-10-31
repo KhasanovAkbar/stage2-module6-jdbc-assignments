@@ -21,9 +21,9 @@ public class SimpleJDBCRepository {
     private Statement st = null;
 
     private static final String createUserSQL = "INSERT INTO myusers (firstName, lastName, age) VALUES (?, ?, ?)";
-    private static final String updateUserSQL = "UPDATE myusers SET firstName=?, lastName=?, age=? WHERE id=?";
-    private static final String deleteUser = "DELETE FROM myfirstdb.myusers WHERE id=?";
-    private static final String findUserByIdSQL = "SELECT * FROM myusers WHERE id=?";
+    private static final String updateUserSQL = "UPDATE myusers SET firstName = ?, lastName = ?, age = ? WHERE id = ?";
+    private static final String deleteUser = "DELETE FROM myusers WHERE id = ?";
+    private static final String findUserByIdSQL = "SELECT * FROM myusers WHERE id = ?";
     private static final String findUserByNameSQL = "SELECT * FROM myusers WHERE firstName=?";
     private static final String findAllUsersSQL = "SELECT * FROM myusers";
 
@@ -152,7 +152,9 @@ public class SimpleJDBCRepository {
             connection = CustomDataSource.getInstance().getConnection();
             ps = connection.prepareStatement(deleteUser);
             ps.setLong(1, userId);
-            ps.executeUpdate();
+            if (ps.executeUpdate() == 0) {
+                throw new SQLException("No such user exists");
+            }
         } finally {
             closeResources();
         }
