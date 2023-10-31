@@ -28,7 +28,7 @@ public class SimpleJDBCRepository {
     private static final String findAllUsersSQL = "SELECT * FROM myusers";
 
 
-    public Long createUser(User user) throws SQLException {
+    public Long createUser(User user) {
         //
         try {
             connection = CustomDataSource.getInstance().getConnection();
@@ -50,12 +50,13 @@ public class SimpleJDBCRepository {
                 throw new SQLException("Creating user failed, no ID obtained");
             }
 
-        } finally {
-            closeResources();
+        } catch (SQLException throwables) {
+            throwRuntimeException(throwables);
         }
+        return null;
     }
 
-    public User findUserById(Long userId) throws SQLException {
+    public User findUserById(Long userId) {
         //
         try {
             connection = CustomDataSource.getInstance().getConnection();
@@ -73,13 +74,13 @@ public class SimpleJDBCRepository {
                 );
             }
 
-        } finally {
-            closeResources();
+        } catch (SQLException throwables) {
+            throwRuntimeException(throwables);
         }
         return null;
     }
 
-    public User findUserByName(String userName) throws SQLException {
+    public User findUserByName(String userName) {
         //
         try {
             connection = CustomDataSource.getInstance().getConnection();
@@ -95,13 +96,13 @@ public class SimpleJDBCRepository {
                         resultSet.getInt("age")
                 );
             }
-        } finally {
-            closeResources();
+        } catch (SQLException throwables) {
+            throwRuntimeException(throwables);
         }
         return null;
     }
 
-    public List<User> findAllUser() throws SQLException {
+    public List<User> findAllUser() {
         //
         List<User> userList = new ArrayList<>();
         try {
@@ -119,13 +120,13 @@ public class SimpleJDBCRepository {
                         )
                 );
             }
-        } finally {
-            closeResources();
+        } catch (SQLException throwables) {
+            throwRuntimeException(throwables);
         }
         return userList;
     }
 
-    public User updateUser(User newUser) throws SQLException {
+    public User updateUser(User newUser) {
         //
         try {
             connection = CustomDataSource.getInstance().getConnection();
@@ -139,14 +140,14 @@ public class SimpleJDBCRepository {
             if (updatedRows > 0) {
                 return new User(newUser.getId(), newUser.getFirstName(), newUser.getLastName(), newUser.getAge());
             }
-        } finally {
-            closeResources();
+        } catch (SQLException throwables) {
+            throwRuntimeException(throwables);
         }
         //update failed
         return null;
     }
 
-    public void deleteUser(Long userId) throws SQLException {
+    public void deleteUser(Long userId) {
         //
         try {
             connection = CustomDataSource.getInstance().getConnection();
@@ -155,26 +156,18 @@ public class SimpleJDBCRepository {
             if (ps.executeUpdate() == 0) {
                 throw new SQLException("No such user exists");
             }
-        } finally {
-            closeResources();
+        } catch (SQLException throwables) {
+            throwRuntimeException(throwables);
         }
 
     }
 
-    private void closeResources() {
-        try {
-            if (ps != null) {
-                ps.close(); // Close the PreparedStatement
-            }
-            if (st != null) {
-                st.close(); // Close the Statement
-            }
-            if (connection != null) {
-                connection.close(); // Close the Connection
-            }
-        } catch (SQLException e) {
-            e.printStackTrace(); // Handle or log any exceptions that may occur during resource closing
+    private void throwRuntimeException(Exception e) {
+        String message = String.format("%s: %s", e.getClass().getName(), e.getMessage());
+        if (e.getCause() != null) {
+            message += String.format("\nCause: %s: %s", e.getCause().getClass().getName(), e.getCause().getMessage());
         }
+        throw new RuntimeException(message);
     }
 
 }
